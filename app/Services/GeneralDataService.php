@@ -72,10 +72,20 @@ class GeneralDataService
     public function index(int $userId): JsonResponse
     {
         try {
-            $generalDataByUser = GeneralData::query()
-                ->where('user_id', '=', $userId)
-                ->get()
-                ->toArray();
+            $user = User::query()
+                ->findOrFail($userId)
+                ->get()[0];
+
+            if ($user->rol == "Administrador") {
+                $generalDataByUser = GeneralData::query()
+                    ->get()
+                    ->toArray();
+            } else {
+                $generalDataByUser = GeneralData::query()
+                    ->where('user_id', '=', $userId)
+                    ->get()
+                    ->toArray();
+            }
 
             for ($i = 0; $i < count($generalDataByUser); $i++) {
                 $generalDataByUser[$i]['bosquejo_finca'] = 'http://127.0.0.1:8000/'.$generalDataByUser[$i]['bosquejo_finca'];
