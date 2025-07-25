@@ -32,6 +32,7 @@ Route::prefix('general-data')->group(function () {
     Route::post('/store/{userId}', [GeneralDataController::class, 'store']);
     Route::put('/update/{id}', [GeneralDataController::class, 'update']);
     Route::delete('/destroy/{id}', [GeneralDataController::class, 'destroy']);
+    Route::put('/change-certification-status/{id}', [GeneralDataController::class, 'changeCertificationStatus']);
 });
 
 Route::prefix('cocoa-harvest-registration')->group(function () {

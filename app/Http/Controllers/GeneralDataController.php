@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateGeneralDataRequest;
 use App\Models\GeneralData;
 use App\Services\GeneralDataService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class GeneralDataController extends Controller
 {
@@ -24,6 +25,11 @@ class GeneralDataController extends Controller
     {
         return $this->generalDataService->index($userId);
 
+    }
+
+    public function changeCertificationStatus(Request $request, int $id): JsonResponse
+    {
+        return $this->generalDataService->changeCertificationStatus($request, $id);
     }
 
     /**

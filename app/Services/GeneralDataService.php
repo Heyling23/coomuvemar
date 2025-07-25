@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateGeneralDataRequest;
 use App\Models\GeneralData;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class GeneralDataService
@@ -32,9 +33,40 @@ class GeneralDataService
         }
     }
 
+    public function changeCertificationStatus(Request $request, int $id): JsonResponse
+    {
+        try {
+            $result = GeneralData::query()
+                ->findOrFail($id)->update([
+                    'es_certificado' => $request->get('es_certificado'),
+                ]);
+
+            return response()->json([
+                'status' => $result,
+                'statusCode' => 200,
+                'message' => 'Registro actualizado correctamente',
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'statusCode' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function updated(UpdateGeneralDataRequest $request, int $id): JsonResponse
     {
         try {
+            $totalAreaLand = $request->get('area_total_finca');
+            $areaCacao = $request->get('area_cacao');
+            if ($areaCacao > $totalAreaLand) {
+                return response()->json([
+                    'status' => false,
+                    'statusCode' => 200,
+                    'message' =>  'Área del cacao no puede ser mayor al Área total de la finca',
+                ]);
+            }
             $result = GeneralData::query()
                 ->findOrFail($id)->updateOrFail([
                     'nombre_productor' => $request->get('nombre_productor'),
@@ -74,8 +106,8 @@ class GeneralDataService
     {
         try {
             $user = User::query()
-                ->findOrFail($userId)
-                ->get()[0];
+                ->where('id', '=', $userId)
+                ->firstOrFail();
 
             if ($user->rol == "Administrador") {
                 $generalDataByUser = GeneralData::query()
@@ -125,7 +157,7 @@ class GeneralDataService
                 produccion: $request->get('produccion'),
                 desarrollo: $request->get('desarrollo'),
                 variedades_cacao: $request->get('variedades_cacao'),
-                es_certificado: $request->get('es_certificado'),
+                es_certificado: false,
                 bosquejo_finca: 'storage/'.$request->get('bosquejo_finca'),
             );
 
