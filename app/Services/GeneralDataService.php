@@ -107,7 +107,7 @@ class GeneralDataService
         try {
             $user = User::query()
                 ->where('id', '=', $userId)
-                ->firstOrFail();
+                ->get()[0];
 
             if ($user->rol == "Administrador") {
                 $generalDataByUser = GeneralData::query()
